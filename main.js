@@ -1,10 +1,16 @@
 const imageInput = document.querySelector('#imageInput')
 const preview = document.querySelector('#preview')
 const form = document.querySelector('#form')
-const screen = document.querySelector('#screen')
-const context = screen.getContext('2d')
 const characterWidthInput = document.querySelector('#characterWidth')
 const fontSizeInput = document.querySelector('#fontSize')
+const screen = document.querySelector('#screen')
+const context = screen.getContext('2d')
+const font = new FontFace('Monofonto', 'url(\'./Monofonto.otf\')')
+
+font.load().then((_) => {
+  document.fonts.add(_)
+})
+
 
 function getNewHeight(width, height, newWidth) {
   const newHeight = Math.round((height * newWidth) / width)
@@ -60,7 +66,7 @@ form.onsubmit = (event) => {
   })
 
   context.clearRect(0, 0, newWidth, newHeight)
-  const fontSize = fontSizeInput.value - 1
+  const fontSize = fontSizeInput.value
 
   const resultWidth = newWidth * fontSize
   const resultHeight = newHeight * fontSize
@@ -71,7 +77,9 @@ form.onsubmit = (event) => {
   context.fillStyle = '#333'
   context.fillRect(0, 0, resultWidth, resultHeight)
 
-  context.font = `${fontSize - 1}px monospace`
+  context.font = `${fontSize}px Monofonto`
+  context.textAlign = 'start'
+  context.textBaseline = 'top'
 
   for (let y = 0; y < newHeight; y++) {
     for (let x = 0; x < newWidth; x++) {
