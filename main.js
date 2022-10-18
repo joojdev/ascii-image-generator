@@ -4,6 +4,7 @@ const form = document.querySelector('#form')
 const characterWidthInput = document.querySelector('#characterWidth')
 const fontSizeInput = document.querySelector('#fontSize')
 const screen = document.querySelector('#screen')
+const board = document.querySelector('#board')
 const context = screen.getContext('2d')
 const font = new FontFace('Monofonto', 'url(\'./Monofonto.otf\')')
 
@@ -64,32 +65,69 @@ form.onsubmit = (event) => {
       return character
     })
   })
-
+  
   context.clearRect(0, 0, newWidth, newHeight)
-  const fontSize = fontSizeInput.value
+  board.innerHTML = ''
+  screen.height = 0
+  const outputType = document.querySelector('input[name="output"]:checked').id
 
-  const resultWidth = newWidth * fontSize
-  const resultHeight = newHeight * fontSize
+  if (outputType == 'image') {
+    const fontSize = fontSizeInput.value
+  
+    const resultWidth = newWidth * fontSize
+    const resultHeight = newHeight * fontSize
+  
+    screen.width = resultWidth
+    screen.height = resultHeight
+  
+    context.fillStyle = '#333'
+    context.fillRect(0, 0, resultWidth, resultHeight)
+  
+    context.font = `${fontSize}px Monofonto`
+    context.textAlign = 'start'
+    context.textBaseline = 'top'
+  
+    for (let y = 0; y < newHeight; y++) {
+      for (let x = 0; x < newWidth; x++) {
+        const { red, green, blue, alpha } = pixelRowArray[y][x]
+  
+        context.fillStyle = `rgba(${red}, ${green}, ${blue}, ${alpha})`
+        context.fillText(characterRowArray[y][x], x * fontSize, y * fontSize)
+      }
+    }
+  } else if (outputType == 'text') {
+    for (let y = 0; y < newHeight; y++) {
+      const rowElement = generateElement('div')
+      for (let x = 0; x < newWidth; x++) {
+        const { red, green, blue, alpha } = pixelRowArray[y][x]
+        const color = `rgba(${red}, ${green}, ${blue}, ${alpha})`
+        const text = characterRowArray[y][x] == ' ' ? '&nbsp;' : characterRowArray[y][x]
 
-  screen.width = resultWidth
-  screen.height = resultHeight
+        const characterElement = generateElement('span', text, color, 'mono')
 
-  context.fillStyle = '#333'
-  context.fillRect(0, 0, resultWidth, resultHeight)
-
-  context.font = `${fontSize}px Monofonto`
-  context.textAlign = 'start'
-  context.textBaseline = 'top'
-
-  for (let y = 0; y < newHeight; y++) {
-    for (let x = 0; x < newWidth; x++) {
-      console.log(pixelRowArray)
-      const { red, green, blue, alpha } = pixelRowArray[y][x]
-
-      context.fillStyle = `rgba(${red}, ${green}, ${blue}, ${alpha})`
-      context.fillText(characterRowArray[y][x], x * fontSize, y * fontSize)
+        rowElement.append(characterElement)
+      }
+      board.append(rowElement)
     }
   }
+}
+
+function generateElement(tag, textContent, color, className) {
+  const element = document.createElement(tag)
+
+  if (textContent) {
+    element.innerHTML = textContent
+  }
+
+  if (color) {
+    element.style.color = color
+  }
+
+  if (className) {
+    element.className = className
+  }
+
+  return element
 }
 
 imageInput.onchange = ({ target }) => {

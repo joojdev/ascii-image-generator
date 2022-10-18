@@ -1,0 +1,19 @@
+* {
+  font-family: monospace;
+}
+
+canvas {
+  width: 80vw;
+}
+
+@font-face {
+  font-family: 'Monofonto';
+  src: url('./Monofonto.otf');
+}
+
+.mono {
+  font-family: 'Monofonto', monospace;
+  padding: 0 5px;
+  line-height: 0em;
+  font-size: .7em;
+}
